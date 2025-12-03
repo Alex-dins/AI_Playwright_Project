@@ -11,9 +11,10 @@ export interface LocatorMap {
   readonly passwordInput: string;
   readonly postalCodeInput: string;
   readonly registerButton: string;
+  readonly loginButton: string;
 }
 
-export const registerPageLocators: LocatorMap = {
+export const authPageLocators: LocatorMap = {
   firstNameInput: "first-name",
   lastNameInput: "last-name",
   dobInput: "dob",
@@ -26,4 +27,5 @@ export const registerPageLocators: LocatorMap = {
   emailInput: "email",
   passwordInput: "password",
   registerButton: "register-submit",
+  loginButton: "Login",
 };

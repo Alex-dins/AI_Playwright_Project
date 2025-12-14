@@ -11,5 +11,8 @@ test.describe("Registration Test", () => {
     await basePage.goTo("/auth/register");
     await authPage.registerNewUser(userData);
     await authPage.verifySuccessfulRegistration();
+
+    await authPage.login(userData);
+    await authPage.verifySuccessfulLogin();
   });
 });

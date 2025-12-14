@@ -3,7 +3,7 @@ import { BasePage } from "./base.page";
 import { UserRegister } from "../interfaces/user-register.interface";
 import { register } from "module";
 import { authPageLocators } from "../locators/auth-page.loc";
-import { UserLogin } from "../types/user-login.type";
+import { UserLogin } from "../types/types";
 
 export class AuthPage extends BasePage {
   constructor(public page: Page) {
@@ -44,14 +44,26 @@ export class AuthPage extends BasePage {
   }
 
   async login(userData: UserLogin): Promise<void> {
-    const emailInput = this.page.getByTestId(authPageLocators.emailInput);
-    const passwordInput = this.page.getByTestId(authPageLocators.passwordInput);
+    await this.fillEmail(userData.email);
+    await this.fillPassword(userData.password);
+    await this.clickLoginButton();
+  }
+
+  async clickLoginButton(): Promise<void> {
     const loginButton = this.page.getByRole("button", {
       name: authPageLocators.loginButton,
     });
-    await emailInput.fill(userData.email);
-    await passwordInput.fill(userData.password);
     await loginButton.click();
+  }
+
+  async fillEmail(email: string): Promise<void> {
+    const emailInput = this.page.getByTestId(authPageLocators.emailInput);
+    await emailInput.fill(email);
+  }
+
+  async fillPassword(password: string): Promise<void> {
+    const passwordInput = this.page.getByTestId(authPageLocators.passwordInput);
+    await passwordInput.fill(password);
   }
 
   async verifySuccessfulRegistration() {
@@ -59,5 +71,26 @@ export class AuthPage extends BasePage {
     await expect(
       this.page.getByRole("heading", { name: "Login" })
     ).toBeVisible();
+  }
+
+  async verifySuccessfulLogin() {
+    await expect(this.page).toHaveURL(/.*\/account/);
+    await expect(
+      this.page.getByRole("heading", { name: "My account" })
+    ).toBeVisible();
+  }
+
+  async verifyInvalidLogin() {
+    await expect(
+      this.page.getByText("Invalid email or password")
+    ).toBeVisible();
+  }
+
+  async verifyEmailIsRequired() {
+    await expect(this.page.getByText("Email is required")).toBeVisible();
+  }
+
+  async verifyPasswordIsRequired() {
+    await expect(this.page.getByText("Password is required")).toBeVisible();
   }
 }

@@ -4,8 +4,8 @@ import {
   request,
   APIResponse,
 } from "@playwright/test";
-import { UserLogin } from "../types/user-login.type";
-import { UserRegister } from "../types/user-register.type";
+import { UserLogin } from "../types/types";
+import { UserRegister } from "../types/types";
 
 export type APIRequestOptions = {
   apiBaseURL: string;

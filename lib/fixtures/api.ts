@@ -1,24 +1,19 @@
-import {
-  test as base,
-  APIRequestContext,
-  request,
-  APIResponse,
-} from "@playwright/test";
-import { UserLogin } from "../types/types";
-import { UserRegister } from "../types/types";
+import { request, APIRequestContext, APIResponse } from "@playwright/test";
+import { test as pages } from "./pages";
+import { UserLogin, UserRegister } from "../types/types";
 
 export type APIRequestOptions = {
   apiBaseURL: string;
   registerNewUser: (userData: UserRegister) => Promise<APIResponse>;
-  loginUser: (credentials: UserLogin) => Promise<APIResponse>;
+  loginAccessToken: (credentials: UserLogin) => Promise<string>;
 };
 
 type APIRequestFixture = {
   apiRequest: APIRequestContext;
 };
 
-export const test = base.extend<APIRequestOptions & APIRequestFixture>({
-  apiBaseURL: ["", { option: true }],
+export const test = pages.extend<APIRequestOptions & APIRequestFixture>({
+  apiBaseURL: [process.env.API_BASE_URL ?? "", { option: true }],
 
   apiRequest: async ({ apiBaseURL }, use) => {
     const apiRequestContext = await request.newContext({
@@ -30,28 +25,28 @@ export const test = base.extend<APIRequestOptions & APIRequestFixture>({
   },
 
   registerNewUser: async ({ apiRequest }, use) => {
-    const registerNewUser = async (userData: UserRegister) => {
-      const response = await apiRequest.post("users/register", {
-        data: userData,
-      });
-      return response;
+    const registerNewUser = async (userData: UserRegister): Promise<APIResponse> => {
+      return apiRequest.post("users/register", { data: userData });
     };
 
     await use(registerNewUser);
   },
 
-  loginUser: async ({ apiRequest }, use) => {
-    const loginUser = async (credentials: UserLogin): Promise<APIResponse> => {
+  loginAccessToken: async ({ apiRequest }, use) => {
+    const loginAccessToken = async (credentials: UserLogin): Promise<string> => {
       const response = await apiRequest.post("users/login", {
         data: {
           email: credentials.email,
           password: credentials.password,
         },
       });
-      const responseBody = await response.json();
+
+      const responseBody = (await response.json()) as { access_token: string };
       return responseBody.access_token;
     };
 
-    await use(loginUser);
+    await use(loginAccessToken);
   },
 });
+
+export { expect } from "@playwright/test";

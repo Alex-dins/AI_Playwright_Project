@@ -1,5 +1,5 @@
-import { mergeTests } from "@playwright/test";
-import { test as pages } from "../fixtures/pages";
-import { test as api } from "../fixtures/api";
+import { test as api } from "./api";
 
-export const test = mergeTests(pages, api);
+export { expect } from "@playwright/test";
+
+export const test = api;

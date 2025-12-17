@@ -11,7 +11,7 @@ test.describe("Login Test", () => {
     await basePage.goTo("/auth/login");
   });
 
-  test("Pozitive Path - Invalid Email", async ({ authPage }) => {
+  test("Happy Path - Successful login", async ({ authPage }) => {
     await authPage.login(userData);
     await authPage.verifySuccessfulLogin();
   });

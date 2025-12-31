@@ -1,10 +1,12 @@
 import { test as base } from "@playwright/test";
 import { BasePage } from "../pages/base.page";
 import { AuthPage } from "../pages/auth.page";
+import { MyAccountPage } from "../pages/my-account.page";
 
 export type pageFixtures = {
   basePage: BasePage;
   authPage: AuthPage;
+  myAccountPage: MyAccountPage;
 };
 
 export const test = base.extend<pageFixtures>({
@@ -16,6 +18,11 @@ export const test = base.extend<pageFixtures>({
   authPage: async ({ page }, use) => {
     const authPage = new AuthPage(page);
     await use(authPage);
+  },
+
+  myAccountPage: async ({ page }, use) => {
+    const myAccountPage = new MyAccountPage(page);
+    await use(myAccountPage);
   },
 });
 

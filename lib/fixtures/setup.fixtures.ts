@@ -1,5 +1,5 @@
-import { test as api } from "./api";
+import { test as helpers } from "../fixtures/helpers";
 
 export { expect } from "@playwright/test";
 
-export const test = api;
+export const test = helpers;

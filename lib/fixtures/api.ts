@@ -9,13 +9,13 @@ export type APIRequestOptions = {
 };
 
 type APIRequestFixture = {
-  apiRequest: APIRequestContext;
+  api: APIRequestContext;
 };
 
 export const test = pages.extend<APIRequestOptions & APIRequestFixture>({
   apiBaseURL: [process.env.API_BASE_URL ?? "", { option: true }],
 
-  apiRequest: async ({ apiBaseURL }, use) => {
+  api: async ({ apiBaseURL }, use) => {
     const apiRequestContext = await request.newContext({
       baseURL: apiBaseURL,
     });
@@ -24,17 +24,21 @@ export const test = pages.extend<APIRequestOptions & APIRequestFixture>({
     await apiRequestContext.dispose();
   },
 
-  registerNewUser: async ({ apiRequest }, use) => {
-    const registerNewUser = async (userData: UserRegister): Promise<APIResponse> => {
-      return apiRequest.post("users/register", { data: userData });
+  registerNewUser: async ({ api }, use) => {
+    const registerNewUser = async (
+      userData: UserRegister
+    ): Promise<APIResponse> => {
+      return api.post("users/register", { data: userData });
     };
 
     await use(registerNewUser);
   },
 
-  loginAccessToken: async ({ apiRequest }, use) => {
-    const loginAccessToken = async (credentials: UserLogin): Promise<string> => {
-      const response = await apiRequest.post("users/login", {
+  loginAccessToken: async ({ api }, use) => {
+    const loginAccessToken = async (
+      credentials: UserLogin
+    ): Promise<string> => {
+      const response = await api.post("users/login", {
         data: {
           email: credentials.email,
           password: credentials.password,

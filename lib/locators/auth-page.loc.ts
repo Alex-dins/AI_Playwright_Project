@@ -12,6 +12,9 @@ export interface LocatorMap {
   readonly postalCodeInput: string;
   readonly registerButton: string;
   readonly loginButton: string;
+  readonly invalidEmailOrPasswordMessage: string;
+  readonly emailIsRequiredMessage: string;
+  readonly passwordIsRequiredMessage: string;
 }
 
 export const authPageLocators: LocatorMap = {
@@ -28,4 +31,7 @@ export const authPageLocators: LocatorMap = {
   passwordInput: "password",
   registerButton: "register-submit",
   loginButton: "Login",
+  invalidEmailOrPasswordMessage: "login-error",
+  emailIsRequiredMessage: "email-error",
+  passwordIsRequiredMessage: "password-error",
 };

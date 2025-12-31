@@ -13,7 +13,7 @@ export const generateUserData = (): UserRegister => {
     postalCode: faker.location.zipCode(),
     city: faker.location.city(),
     state: faker.location.state(),
-    country: faker.location.country(),
+    country: faker.location.countryCode(),
     phone: faker.string.numeric(11),
     email: faker.internet.email(),
     password: faker.internet.password({ length: 20, prefix: "0#" }),

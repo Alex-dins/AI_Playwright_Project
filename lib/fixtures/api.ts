@@ -1,10 +1,10 @@
 import { request, APIRequestContext, APIResponse } from "@playwright/test";
 import { test as pages } from "./pages";
-import { UserLogin, UserRegister } from "../types/types";
+import { UserLogin, ApiUserRegister } from "../types/types";
 
 export type APIRequestOptions = {
   apiBaseURL: string;
-  registerNewUser: (userData: UserRegister) => Promise<APIResponse>;
+  registerNewUser: (userData: ApiUserRegister) => Promise<APIResponse>;
   loginAccessToken: (credentials: UserLogin) => Promise<string>;
 };
 
@@ -26,7 +26,7 @@ export const test = pages.extend<APIRequestOptions & APIRequestFixture>({
 
   registerNewUser: async ({ api }, use) => {
     const registerNewUser = async (
-      userData: UserRegister
+      userData: ApiUserRegister
     ): Promise<APIResponse> => {
       return api.post("users/register", { data: userData });
     };

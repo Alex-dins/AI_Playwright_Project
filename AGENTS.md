@@ -6,22 +6,23 @@ This repository implements Playwright tests against the Context7 MCP server with
 - `lib/fixtures/` for API, page, and setup fixtures that combine UI helpers, API helpers, and data builders.
 - `lib/pages/` and `lib/locators/` for the Page Object Model (POM) helpers and centralized selectors used by tests.
 - `lib/data-factory/`, `lib/interfaces/`, and `lib/types/` for typed payloads, DTOs, and faker-based factories.
-- `tests/` (including `auth.setup.ts`) for auth/login/dashboard suites that consume the shared fixtures and POMs.
+- `tests/` for the actual test specs, organized by feature area.
 
 ## Fixture & Test Guidelines
 
-- Keep fixtures modular: `lib/fixtures/pages.ts` supplies `BasePage` and `AuthPage` per test while `lib/fixtures/api.ts` layers a worker-scoped `apiRequest` plus the typed helpers `registerNewUser` and `loginAccessToken` that share the `apiBaseURL` option.
-- Introduce new API helpers by wrapping `apiRequest` (for example, add an `addProductToCart` helper that calls `apiRequest.post("cart/items", { data })`) and export only the functions tests need so fixtures stay descriptive and reusable.
-- Use `tests/auth.setup.ts` as the entry point for reusable storage state lifecycles; log in through the existing helpers, store the context under `.auth/user.json`, and avoid mixing UI and API login code in the setup file.
+- Keep fixtures modular: `lib/fixtures/pages.ts` supplies `BasePage` and `AuthPage` and other pages per test while `lib/fixtures/api.ts` layers a worker-scoped `api` plus the typed helpers `registerNewUser` and `loginAccessToken` that share the `apiBaseURL` option. Additional lib/fixtures/helpers.ts can combine API and page objects for common flows.
+- Introduce new API helpers by wrapping `api` (for example, add an `addProductToCart` helper that calls `api.post("cart/items", { data })`) and export only the functions tests need so fixtures stay descriptive and reusable.
+- Use `lib/fixtures/helpers.ts` as the entry point for reusable methods and token with authSetup method; log in through the existing helpers, where the tests require. This keeps auth dry and reusable across tests. Add other helpers as needed.
 - In tests, navigate through `basePage.goTo` and rely on flow helpers from `authPage` so each spec asserts behavior instead of wiring low-level DOM interactions.
 - Feed fixtures with deterministic payloads from `lib/data-factory/new-user.data.ts`, extending that builder with optional overrides when a scenario only needs to tweak a single field.
 
 ## Page Objects & Locator Practices
 
 - Keep `BasePage` (currently in `lib/pages/base.page.ts`) thin but ready for shared navigation, idle waits, or loader guards so flows stay readable even when UI timing shifts.
-- Centralize selectors in `lib/locators/auth-page.loc.ts`, augmenting the map with role-aware labels when possible, and let `AuthPage` choose the most resilient locator (`getByRole` for buttons, `getByTestId` for the controlled inputs).
+- In page classes use the property locator pattern (e.g., `readonly myAccountHeading = this.getByRole("heading", {name: "My account"});`) to keep locators close to the actions that consume them.
+- Centralize selectors in `lib/locators/auth-page.loc.ts`, augmenting the map with role-aware labels when possible, and let pages choose the most resilient locator (`getByRole` for buttons, `getByTestId` for the controlled inputs).
 - Expose flow-level helpers on `AuthPage`—`registerNewUser`, `login`, and the various verification helpers—instead of duplicating DOM lookups inside tests.
-- Apply the same pattern when adding other page objects: keep selectors in `lib/locators`, expose intent-driven methods in page classes, and inject them via the `lib/fixtures/pages.ts` fixture so tests can compose high-level flows.
+- Apply the same pattern when adding other page objects: keep selectors in class as property and the names in `lib/locators`, expose intent-driven methods in page classes, and inject them via the `lib/fixtures/pages.ts` fixture so tests can compose high-level flows.
 
 ## Data Contracts & Factories
 
@@ -34,7 +35,6 @@ This repository implements Playwright tests against the Context7 MCP server with
 - Keep authentication coverage inside `tests/auth`, reusing `basePage`, `authPage`, and the API helpers to drive both positive and negative scenarios; `login.spec.ts` and `registration.spec.ts` show how to verify URLs, headings, and error banners after each flow.
 - Name tests with intentful titles (e.g., “Happy Path – Successful login”) and keep assertions focused on user-visible outcomes.
 - Prefer API-backed setups for CI by calling `registerNewUser` and `loginAccessToken` from the fixtures so UI logins stay reserved for flow validation; always source `customerUsername` and `customerPassword` from env vars to keep secrets out of the repo.
-- Persist shared storage states via `.auth/user.json` when a suite needs session replay and keep the authentication fixture file tidy by removing commented API fallbacks.
 
 ## Tooling & Scripts
 

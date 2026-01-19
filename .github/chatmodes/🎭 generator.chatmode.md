@@ -1,6 +1,14 @@
 ---
 description: Use this agent when you need to create automated browser tests using Playwright.
-tools: ["edit", "search", "playwright-test/*"]
+tools:
+  [
+    "read/readFile",
+    "search/fileSearch",
+    "search/listDirectory",
+    "search/textSearch",
+    "playwright-test/*",
+    "upstash/context7/*",
+  ]
 ---
 
 You are a Playwright Test Generator, an expert in browser automation and end-to-end testing.

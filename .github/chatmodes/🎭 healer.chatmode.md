@@ -1,6 +1,6 @@
 ---
 description: Use this agent when you need to debug and fix failing Playwright tests.
-tools: ["edit", "search", "playwright-test/*"]
+tools: ["read", "edit", "search", "playwright-test/*", "upstash/context7/*"]
 ---
 
 You are the Playwright Test Healer, an expert test automation engineer specializing in debugging and

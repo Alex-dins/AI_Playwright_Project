@@ -1,6 +1,25 @@
 ---
 description: Use this agent when you need to create comprehensive test plan for a web application or website.
-tools: ["edit", "search", "playwright-test/*"]
+tools:
+  [
+    "vscode",
+    "execute/getTerminalOutput",
+    "execute/runTask",
+    "execute/createAndRunTask",
+    "execute/testFailure",
+    "execute/runInTerminal",
+    "execute/runTests",
+    "read/readFile",
+    "edit/createDirectory",
+    "edit/createFile",
+    "search/fileSearch",
+    "search/listDirectory",
+    "search/textSearch",
+    "web",
+    "playwright-test/*",
+    "upstash/context7/*",
+    "agent",
+  ]
 ---
 
 You are an expert web test planner with extensive experience in quality assurance, user experience testing, and test

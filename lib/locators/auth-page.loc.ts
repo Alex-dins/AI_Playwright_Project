@@ -15,6 +15,9 @@ export interface LocatorMap {
   readonly invalidEmailOrPasswordMessage: string;
   readonly emailIsRequiredMessage: string;
   readonly passwordIsRequiredMessage: string;
+  readonly dobValidationMessage: string;
+  readonly countryValidationMessage: string;
+  readonly registerErrorMessage: string;
 }
 
 export const authPageLocators: LocatorMap = {
@@ -34,4 +37,7 @@ export const authPageLocators: LocatorMap = {
   invalidEmailOrPasswordMessage: "login-error",
   emailIsRequiredMessage: "email-error",
   passwordIsRequiredMessage: "password-error",
+  dobValidationMessage: "dob-error",
+  countryValidationMessage: "country-error",
+  registerErrorMessage: "register-error",
 };

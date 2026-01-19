@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "build:analyzer": "npx tsc",
+    "analyze:failures": "npm run build:analyzer && node build/lib/utils/analyze-failures.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -12,6 +15,8 @@
     "@faker-js/faker": "^10.1.0",
     "@playwright/test": "^1.56.1",
     "@types/node": "^24.8.1",
-    "dotenv": "^17.2.3"
+    "dotenv": "^17.2.3",
+    "openai": "^6.16.0",
+    "typescript": "^5.9.3"
   }
 }

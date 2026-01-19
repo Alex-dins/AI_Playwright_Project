@@ -28,10 +28,9 @@ export default defineConfig<APIRequestOptions>({
     baseURL: process.env.BASE_URL,
     apiBaseURL: process.env.API_BASE_URL,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: "on-first-retry",
+    trace: "retain-on-failure",
     testIdAttribute: "data-test",
   },
-
   /* Configure projects for major browsers */
   projects: [
     { name: "setup", testMatch: /.*\.setup\.ts/ },

@@ -1,4 +1,4 @@
-export interface UserRegister {
+export interface UserDomain {
   firstName: string;
   lastName: string;
   dateOfBirth: string;

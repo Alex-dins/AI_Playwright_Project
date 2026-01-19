@@ -3,7 +3,7 @@ export type UserLogin = {
   password: string;
 };
 
-export type UserRegister = {
+export type ApiUserRegister = {
   first_name: string;
   last_name: string;
   dob: string;

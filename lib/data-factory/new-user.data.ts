@@ -1,7 +1,9 @@
-import { UserRegister } from "../interfaces/user-register.interface";
+import { UserDomain } from "../interfaces/user-register.interface";
 import { faker } from "@faker-js/faker";
 
-export const generateUserData = (): UserRegister => {
+export const generateUserData = (
+  overrides: Partial<UserDomain> = {}
+): UserDomain => {
   return {
     firstName: faker.person.firstName(),
     lastName: faker.person.lastName(),
@@ -17,5 +19,6 @@ export const generateUserData = (): UserRegister => {
     phone: faker.string.numeric(11),
     email: faker.internet.email(),
     password: faker.internet.password({ length: 20, prefix: "0#" }),
+    ...overrides,
   };
 };

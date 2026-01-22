@@ -8,18 +8,22 @@ export interface FailureContext {
   snippet?: string;
 }
 
+function getFullTestName(test: any, parentSuiteTitles: string[]): string {
+  const hierarchy = [...parentSuiteTitles, test.title].filter(Boolean);
+  return hierarchy.join(" › ");
+}
+
 export class PlaywrightReportParser {
   static parseReport(reportPath: string): FailureContext[] {
     const raw = fs.readFileSync(reportPath, "utf-8");
     const report = JSON.parse(raw);
-
     const failures: FailureContext[] = [];
 
-    function processTest(test: any) {
+    function processTest(test: any, parents: string[]) {
       test.results?.forEach((result: any) => {
         if (result.status === "failed" && result.error) {
           failures.push({
-            testName: test.title,
+            testName: getFullTestName(test, parents),
             errorMessage: result.error.message,
             stackTrace: result.error.stack,
             location: result.error.location
@@ -31,24 +35,26 @@ export class PlaywrightReportParser {
       });
     }
 
-    function traverseSuite(suite: any) {
-      // Recurse nested suites:
-      suite.suites?.forEach((child: any) => traverseSuite(child));
+    function traverseSuite(suite: any, parents: string[]) {
+      const currentParents = [...parents, suite.title].filter(Boolean);
 
-      // Process any specs (Playwright uses "specs" that contain tests):
+      suite.suites?.forEach((child: any) =>
+        traverseSuite(child, currentParents),
+      );
+
       suite.specs?.forEach((spec: any) => {
-        spec.tests?.forEach((test: any) => processTest(test));
+        spec.tests?.forEach((test: any) =>
+          processTest(test, currentParents.concat(spec.title)),
+        );
       });
 
-      // Also process direct tests (some JSON can include tests directly):
-      suite.tests?.forEach((test: any) => processTest(test));
+      suite.tests?.forEach((test: any) => processTest(test, currentParents));
     }
 
-    // Root may include an array of suites:
     if (Array.isArray(report.suites)) {
-      report.suites.forEach((s: any) => traverseSuite(s));
+      report.suites.forEach((s: any) => traverseSuite(s, []));
     } else {
-      traverseSuite(report);
+      traverseSuite(report, []);
     }
 
     return failures;

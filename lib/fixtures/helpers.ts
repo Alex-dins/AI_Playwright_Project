@@ -1,6 +1,8 @@
 import { test as api } from "./api";
 import { UserLogin } from "../types/types";
 import { Response } from "@playwright/test";
+import { generateUserData } from "../data-factory/new-user.data";
+import { UserDomain } from "../interfaces/user-register.interface";
 
 export type setupResponseOptions = {
   url: string;
@@ -11,6 +13,7 @@ export type setupResponseOptions = {
 export type HelperSetupFixtures = {
   authSetup: (credentials: UserLogin) => Promise<void>;
   waitForResponse: (setupOptions: setupResponseOptions) => Promise<Response>;
+  generateUserData: (overrides?: Partial<UserDomain>) => UserDomain;
 };
 
 export const test = api.extend<HelperSetupFixtures>({
@@ -27,17 +30,24 @@ export const test = api.extend<HelperSetupFixtures>({
 
   waitForResponse: async ({ page, apiBaseURL }, use) => {
     const waitForResponse = (
-      setupOptions: setupResponseOptions
+      setupOptions: setupResponseOptions,
     ): Promise<Response> => {
       return page.waitForResponse(
         (response) =>
           response.url() === `${apiBaseURL}${setupOptions.url}` &&
           response.request().method() === setupOptions.method &&
-          response.status() === setupOptions.status
+          response.status() === setupOptions.status,
       );
     };
 
     await use(waitForResponse);
+  },
+
+  generateUserData: async ({}, use) => {
+    const userData = (overrides: Partial<UserDomain> = {}): UserDomain => {
+      return generateUserData(overrides);
+    };
+    await use(userData);
   },
 });
 

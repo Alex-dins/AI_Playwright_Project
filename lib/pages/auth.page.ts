@@ -5,6 +5,7 @@ import { authPageLocators } from "../locators/auth-page.loc";
 import { UserLogin } from "../types/types";
 
 export class AuthPage extends BasePage {
+  // Inputs and Buttons
   readonly firstNameInput = this.getByDataTest(authPageLocators.firstNameInput);
   readonly lastNameInput = this.getByDataTest(authPageLocators.lastNameInput);
   readonly dobInput = this.getByDataTest(authPageLocators.dobInput);
@@ -17,47 +18,14 @@ export class AuthPage extends BasePage {
   readonly countrySelect = this.getByDataTest(authPageLocators.countrySelect);
   readonly phoneInput = this.getByDataTest(authPageLocators.phoneInput);
   readonly registerButton = this.getByDataTest(authPageLocators.registerButton);
-  readonly invalidEmailOrPasswordMessage = this.getByDataTest(
-    authPageLocators.invalidEmailOrPasswordMessage,
-  );
-  readonly emailIsRequiredMessage = this.getByDataTest(
-    authPageLocators.emailIsRequiredMessage,
-  );
-  readonly passwordIsRequiredMessage = this.getByDataTest(
-    authPageLocators.passwordIsRequiredMessage,
-  );
   readonly emailInput = this.getByDataTest(authPageLocators.emailInput);
   readonly passwordInput = this.getByDataTest(authPageLocators.passwordInput);
   readonly loginButton = this.getByRole("button", {
     name: authPageLocators.loginButton,
   });
-  readonly dobValidationMessage = this.getByDataTest(
-    authPageLocators.dobValidationMessage,
-  );
-  readonly countryValidationMessage = this.getByDataTest(
-    authPageLocators.countryValidationMessage,
-  );
-  readonly registerErrorMessage = this.getByDataTest(
-    authPageLocators.registerErrorMessage,
-  );
 
   constructor(public page: Page) {
     super(page);
-  }
-
-  async registerNewUser(userData: UserDomain): Promise<void> {
-    await this.firstNameInput.fill(userData.firstName);
-    await this.lastNameInput.fill(userData.lastName);
-    await this.dobInput.fill(userData.dateOfBirth);
-    await this.streetInput.fill(userData.street);
-    await this.postalCodeInput.fill(userData.postalCode);
-    await this.cityInput.fill(userData.city);
-    await this.stateInput.fill(userData.state);
-    await this.countrySelect.selectOption(userData.country);
-    await this.phoneInput.fill(userData.phone);
-    await this.emailInput.fill(userData.email);
-    await this.passwordInput.fill(userData.password);
-    await this.registerButton.click();
   }
 
   async fillRegistrationForm(

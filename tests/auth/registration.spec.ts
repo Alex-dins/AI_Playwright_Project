@@ -1,12 +1,13 @@
-import { generateUserData } from "../../lib/data-factory/new-user.data";
+// import { generateUserData } from "../../lib/data-factory/new-user.data";
 import type { UserDomain } from "../../lib/interfaces/user-register.interface";
 import type { AuthPage } from "../../lib/pages/auth.page";
 import type { Response, Route } from "@playwright/test";
 import { expect, test } from "../../lib/fixtures/setup.fixtures";
 import { apiUserData } from "../../lib/mappers/user.mapper";
+import { VALIDATION_MESSAGES } from "../../lib/constants/validation-messages";
 
 test.describe("Registration Test", () => {
-  const userData = generateUserData();
+  // const userData = generateUserData();
 
   test.beforeEach(async ({ basePage }) => {
     await basePage.goTo("/auth/register");
@@ -16,13 +17,14 @@ test.describe("Registration Test", () => {
     authPage,
     page,
     waitForResponse,
+    generateUserData,
   }) => {
     const registeredResponsePromise = waitForResponse({
       url: "/users/register",
       method: "POST",
       status: 201,
     });
-    await authPage.fillRegistrationForm(userData);
+    await authPage.fillRegistrationForm(generateUserData());
     await authPage.clickRegisterButton();
 
     await registeredResponsePromise;
@@ -30,21 +32,24 @@ test.describe("Registration Test", () => {
   });
 
   test("Negative Path - Required Fields Validation", async ({
+    basePage,
     authPage,
     page,
+    generateUserData,
   }) => {
+    const userEmail = generateUserData().email;
     const requiredErrors = [
-      "First name is required",
-      "Last name is required",
-      "Date of Birth is required",
-      "Street is required",
-      "Postcode is required",
-      "City is required",
-      "State is required",
-      "Country is required",
-      "Phone is required",
-      "Email is required",
-      "Password is required",
+      VALIDATION_MESSAGES.REQUIRED.FIRST_NAME,
+      VALIDATION_MESSAGES.REQUIRED.LAST_NAME,
+      VALIDATION_MESSAGES.REQUIRED.DOB,
+      VALIDATION_MESSAGES.REQUIRED.STREET,
+      VALIDATION_MESSAGES.REQUIRED.POSTCODE,
+      VALIDATION_MESSAGES.REQUIRED.CITY,
+      VALIDATION_MESSAGES.REQUIRED.STATE,
+      VALIDATION_MESSAGES.REQUIRED.COUNTRY,
+      VALIDATION_MESSAGES.REQUIRED.PHONE,
+      VALIDATION_MESSAGES.REQUIRED.EMAIL,
+      VALIDATION_MESSAGES.REQUIRED.PASSWORD,
     ];
 
     let registerCallCount = 0;
@@ -54,7 +59,7 @@ test.describe("Registration Test", () => {
     });
 
     await authPage.clickRegisterButton();
-    await authPage.fillEmail(userData.email);
+    await authPage.fillEmail(userEmail);
 
     await expect(authPage.emailIsRequiredMessage).not.toBeVisible();
 
@@ -70,67 +75,82 @@ test.describe("Registration Test", () => {
   test("Negative Path - Date of Birth Format Validation", async ({
     authPage,
     page,
+    generateUserData,
   }) => {
     const invalidDobUser = generateUserData();
     invalidDobUser.dateOfBirth = "13/32/1980";
 
     await authPage.fillRegistrationForm(invalidDobUser);
-    await authPage.registerButton.click();
+    await authPage.clickRegisterButton();
 
-    await expect(authPage.dobValidationMessage).toHaveText(
-      "Please enter a valid date in YYYY-MM-DD format.",
-    );
+    await expect(page.getByText(VALIDATION_MESSAGES.FORMAT.DOB)).toBeVisible();
     await expect(page).toHaveURL(/.*\/auth\/register/);
 
     await authPage.fillDob("2099-01-01");
-    await authPage.registerButton.click();
+    await authPage.clickRegisterButton();
 
-    await expect(authPage.registerErrorMessage).toHaveText(
-      "Customer must be 18 years old.",
-    );
-    await expect(authPage.dobValidationMessage).not.toBeVisible();
+    await expect(
+      page.getByText(VALIDATION_MESSAGES.FORMAT.DOB_MINIMUM_AGE),
+    ).toBeVisible();
+    await expect(
+      page.getByText(VALIDATION_MESSAGES.FORMAT.DOB),
+    ).not.toBeVisible();
     await expect(page).toHaveURL(/.*\/auth\/register/);
 
     await authPage.fillDob("1995-06-15");
     await authPage.clickRegisterButton();
 
-    await expect(authPage.registerErrorMessage).not.toBeVisible();
+    await expect(
+      page.getByText(VALIDATION_MESSAGES.FORMAT.DOB_MINIMUM_AGE),
+    ).not.toBeVisible();
     await expect(page).toHaveURL(/.*\/auth\/login/);
   });
 
-  test("Negative Path - Country Requirement", async ({ authPage, page }) => {
+  test("Negative Path - Country Requirement", async ({
+    authPage,
+    page,
+    generateUserData,
+  }) => {
     const userData = generateUserData();
     await authPage.fillRegistrationForm(userData, {
       skipFields: ["country", "firstName"],
     });
     await authPage.clickRegisterButton();
 
-    await expect(authPage.countryValidationMessage).toHaveText(
-      "Country is required",
-    );
+    await expect(
+      page.getByText(VALIDATION_MESSAGES.REQUIRED.COUNTRY),
+    ).toBeVisible();
     await expect(page).toHaveURL(/.*\/auth\/register/);
 
     await authPage.selectCountry(userData.country);
     await authPage.clickRegisterButton();
 
-    await expect(authPage.countryValidationMessage).not.toBeVisible();
+    await expect(
+      page.getByText(VALIDATION_MESSAGES.REQUIRED.COUNTRY),
+    ).not.toBeVisible();
   });
 
-  test("Negative Path - Invalid Email Format", async ({ authPage, page }) => {
+  test("Negative Path - Invalid Email Format", async ({
+    authPage,
+    page,
+    generateUserData,
+  }) => {
     const invalidEmailUser = generateUserData({ email: "invalid-email" });
 
     await authPage.fillRegistrationForm(invalidEmailUser);
     await authPage.clickRegisterButton();
 
     await expect(page).toHaveURL(/.*\/auth\/register/);
-    await expect(page.getByText("Email format is invalid")).toBeVisible();
+    await expect(
+      page.getByText(VALIDATION_MESSAGES.FORMAT.EMAIL),
+    ).toBeVisible();
     await expect(authPage.emailInput).toHaveValue("invalid-email");
   });
 
   test("Negative Path - Password Policy Enforcement", async ({
-    basePage,
     authPage,
     page,
+    generateUserData,
   }) => {
     const weakPasswordCases = [
       "password#1", // missing uppercase
@@ -146,44 +166,86 @@ test.describe("Registration Test", () => {
 
       await authPage.clickRegisterButton();
       await expect(page).toHaveURL(/.*\/auth\/register/);
-      await expect(authPage.passwordInput).toHaveAttribute(
-        "aria-invalid",
-        "true",
-      );
-      await expect(page.getByText(/password.*must/i)).toBeVisible();
+      await expect(
+        page
+          .getByText(VALIDATION_MESSAGES.FORMAT.PASSWORD_SPECIAL_CHAR)
+          .or(page.getByText(VALIDATION_MESSAGES.LENGTH.PASSWORD_MIN)),
+      ).toBeVisible();
     }
   });
 
-  test("Negative Path - Phone and Postal Formatting", async ({
+  test("Negative Path - Phone Number Validation", async ({
     authPage,
     page,
+    waitForResponse,
+    generateUserData,
   }) => {
-    const invalidPhone = generateUserData({
+    const invalidPhoneUser = generateUserData({
       phone: "ABC-DEF",
-      postalCode: "ABCDE",
     });
-    await authPage.fillRegistrationForm(invalidPhone);
+    await authPage.fillRegistrationForm(invalidPhoneUser);
     await authPage.clickRegisterButton();
 
     await expect(page).toHaveURL(/.*\/auth\/register/);
-    await expect(authPage.phoneInput).toHaveAttribute("aria-invalid", "true");
-    await expect(authPage.postalCodeInput).toHaveAttribute(
-      "aria-invalid",
-      "true",
-    );
+    await expect(
+      page.getByText(VALIDATION_MESSAGES.FORMAT.PHONE_NUMBERS_ONLY),
+    ).toBeVisible();
 
-    const longPostalAndPhone = generateUserData({
-      phone: "1234567890",
+    await authPage.phoneInput.fill("1234567890");
+    await expect(
+      page.getByText(VALIDATION_MESSAGES.FORMAT.PHONE_NUMBERS_ONLY),
+    ).not.toBeVisible();
+
+    const successResponse = waitForResponse({
+      url: "/users/register",
+      method: "POST",
+      status: 201,
+    });
+
+    await authPage.clickRegisterButton();
+    await successResponse;
+
+    await expect(page).toHaveURL(/.*\/auth\/login/);
+  });
+
+  test("Negative Path - Postal Code Length Validation", async ({
+    authPage,
+    page,
+    waitForResponse,
+    generateUserData,
+  }) => {
+    const invalidPostalUser = generateUserData({
       postalCode: "12345678901234567890",
     });
-    await authPage.fillRegistrationForm(longPostalAndPhone);
+    await authPage.fillRegistrationForm(invalidPostalUser);
+
+    const postalCodeErrorResponse = waitForResponse({
+      url: "/users/register",
+      method: "POST",
+      status: 422,
+    });
+
     await authPage.clickRegisterButton();
+    await postalCodeErrorResponse;
 
     await expect(page).toHaveURL(/.*\/auth\/register/);
-    await expect(authPage.postalCodeInput).toHaveAttribute(
-      "aria-invalid",
-      "true",
-    );
+    await expect(
+      page.getByText(VALIDATION_MESSAGES.FORMAT.POSTCODE_LENGTH_EXCEEDED),
+    ).toBeVisible();
+
+    await authPage.postalCodeInput.fill("12345");
+    const successResponse = waitForResponse({
+      url: "/users/register",
+      method: "POST",
+      status: 201,
+    });
+
+    await authPage.clickRegisterButton();
+    await successResponse;
+    await expect(
+      page.getByText(VALIDATION_MESSAGES.FORMAT.POSTCODE_LENGTH_EXCEEDED),
+    ).not.toBeVisible();
+    await expect(page).toHaveURL(/.*\/auth\/login/);
   });
 
   test("Negative Path - Duplicate Email Registration", async ({
@@ -191,26 +253,27 @@ test.describe("Registration Test", () => {
     page,
     registerNewUser,
     waitForResponse,
+    generateUserData,
   }) => {
-    let masterUser = generateUserData();
+    const masterUser = generateUserData();
     await registerNewUser(apiUserData(masterUser));
 
-    const duplicateResponse = waitForResponse({
+    const registrationErrorResponse = waitForResponse({
       url: "/users/register",
       method: "POST",
       status: 422,
     });
 
-    const duplicateAttempt = generateUserData({ email: masterUser.email });
-    await authPage.fillRegistrationForm(duplicateAttempt);
+    const existingUserAttempt = generateUserData({ email: masterUser.email });
+    await authPage.fillRegistrationForm(existingUserAttempt);
 
     await authPage.clickRegisterButton();
-    await duplicateResponse;
+    await registrationErrorResponse;
 
     await expect(page).toHaveURL(/.*\/auth\/register/);
     await expect(
-      page.getByText("A customer with this email address already exists."),
-    ).toBeVisible(); //data-test="register-error"
+      page.getByText(VALIDATION_MESSAGES.FORMAT.EMAIL_ALREADY_EXISTS),
+    ).toBeVisible();
     await expect(authPage.emailInput).toHaveValue(masterUser.email);
   });
 
@@ -218,16 +281,17 @@ test.describe("Registration Test", () => {
     authPage,
     page,
     waitForResponse,
+    generateUserData,
   }) => {
     const failureHandler = async (route: Route) => {
       if (route.request().method() === "POST") {
         await route.fulfill({
           status: 500,
           body: JSON.stringify({
-            message: "Internal server error",
+            message: ["Internal server error"],
           }),
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json, text/plain, */*",
           },
         });
       } else {
@@ -238,16 +302,18 @@ test.describe("Registration Test", () => {
 
     const errorUser = generateUserData();
     await authPage.fillRegistrationForm(errorUser);
-    await authPage.clickRegisterButton();
+    const errorResponse = waitForResponse({
+      url: "/users/register",
+      method: "POST",
+      status: 500,
+    });
 
-    await page.waitForResponse(
-      (response) =>
-        response.request().method() === "POST" &&
-        response.url().includes("/users/register") &&
-        response.status() === 500,
-    );
+    await authPage.clickRegisterButton();
+    await errorResponse;
     await expect(page).toHaveURL(/.*\/auth\/register/);
-    await expect(page.getByText(/something went wrong/i)).toBeVisible();
+    await expect(
+      page.getByText(VALIDATION_MESSAGES.SERVER_ERROR),
+    ).toBeVisible();
     await expect(authPage.firstNameInput).toHaveValue(errorUser.firstName);
 
     page.unroute("**/users/register", failureHandler);

@@ -23,6 +23,15 @@ export class AuthPage extends BasePage {
   readonly loginButton = this.getByRole("button", {
     name: authPageLocators.loginButton,
   });
+  readonly invalidEmailOrPasswordMessage = this.getByDataTest(
+    authPageLocators.invalidEmailOrPasswordMessage,
+  );
+  readonly emailIsRequiredMessage = this.getByDataTest(
+    authPageLocators.emailIsRequiredMessage,
+  );
+  readonly passwordIsRequiredMessage = this.getByDataTest(
+    authPageLocators.passwordIsRequiredMessage,
+  );
 
   constructor(public page: Page) {
     super(page);

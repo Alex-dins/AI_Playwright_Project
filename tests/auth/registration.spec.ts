@@ -1,21 +1,16 @@
-// import { generateUserData } from "../../lib/data-factory/new-user.data";
-import type { UserDomain } from "../../lib/interfaces/user-register.interface";
-import type { AuthPage } from "../../lib/pages/auth.page";
-import type { Response, Route } from "@playwright/test";
+import type { Route } from "@playwright/test";
 import { expect, test } from "../../lib/fixtures/setup.fixtures";
 import { apiUserData } from "../../lib/mappers/user.mapper";
 import { VALIDATION_MESSAGES } from "../../lib/constants/validation-messages";
+import { pageUrls } from "../../lib/constants/page-urls";
 
 test.describe("Registration Test", () => {
-  // const userData = generateUserData();
-
   test.beforeEach(async ({ basePage }) => {
     await basePage.goTo("/auth/register");
   });
 
   test("Happy Path - Successful Registration", async ({
     authPage,
-    page,
     waitForResponse,
     generateUserData,
   }) => {
@@ -28,7 +23,7 @@ test.describe("Registration Test", () => {
     await authPage.clickRegisterButton();
 
     await registeredResponsePromise;
-    await expect(page).toHaveURL(/.*\/auth\/login/);
+    await authPage.checkPageUrl(pageUrls.login);
   });
 
   test("Negative Path - Required Fields Validation", async ({
@@ -61,14 +56,16 @@ test.describe("Registration Test", () => {
     await authPage.clickRegisterButton();
     await authPage.fillEmail(userEmail);
 
-    await expect(authPage.emailIsRequiredMessage).not.toBeVisible();
+    await expect(
+      authPage.getByText(VALIDATION_MESSAGES.REQUIRED.EMAIL),
+    ).not.toBeVisible();
 
     await authPage.fillEmail("");
 
     for (const message of requiredErrors) {
-      await expect(page.getByText(message)).toBeVisible();
+      await expect(authPage.getByText(message)).toBeVisible();
     }
-    await expect(page).toHaveURL(/.*\/auth\/register/);
+    await authPage.checkPageUrl(pageUrls.register);
     expect(registerCallCount).toBe(0);
   });
 
@@ -83,27 +80,29 @@ test.describe("Registration Test", () => {
     await authPage.fillRegistrationForm(invalidDobUser);
     await authPage.clickRegisterButton();
 
-    await expect(page.getByText(VALIDATION_MESSAGES.FORMAT.DOB)).toBeVisible();
-    await expect(page).toHaveURL(/.*\/auth\/register/);
+    await expect(
+      authPage.getByText(VALIDATION_MESSAGES.FORMAT.DOB),
+    ).toBeVisible();
+    await authPage.checkPageUrl(pageUrls.register);
 
     await authPage.fillDob("2099-01-01");
     await authPage.clickRegisterButton();
 
     await expect(
-      page.getByText(VALIDATION_MESSAGES.FORMAT.DOB_MINIMUM_AGE),
+      authPage.getByText(VALIDATION_MESSAGES.FORMAT.DOB_MINIMUM_AGE),
     ).toBeVisible();
     await expect(
-      page.getByText(VALIDATION_MESSAGES.FORMAT.DOB),
+      authPage.getByText(VALIDATION_MESSAGES.FORMAT.DOB),
     ).not.toBeVisible();
-    await expect(page).toHaveURL(/.*\/auth\/register/);
+    await authPage.checkPageUrl(pageUrls.register);
 
     await authPage.fillDob("1995-06-15");
     await authPage.clickRegisterButton();
 
     await expect(
-      page.getByText(VALIDATION_MESSAGES.FORMAT.DOB_MINIMUM_AGE),
+      authPage.getByText(VALIDATION_MESSAGES.FORMAT.DOB_MINIMUM_AGE),
     ).not.toBeVisible();
-    await expect(page).toHaveURL(/.*\/auth\/login/);
+    await authPage.checkPageUrl(pageUrls.login);
   });
 
   test("Negative Path - Country Requirement", async ({
@@ -118,15 +117,15 @@ test.describe("Registration Test", () => {
     await authPage.clickRegisterButton();
 
     await expect(
-      page.getByText(VALIDATION_MESSAGES.REQUIRED.COUNTRY),
+      authPage.getByText(VALIDATION_MESSAGES.REQUIRED.COUNTRY),
     ).toBeVisible();
-    await expect(page).toHaveURL(/.*\/auth\/register/);
+    await authPage.checkPageUrl(pageUrls.register);
 
     await authPage.selectCountry(userData.country);
     await authPage.clickRegisterButton();
 
     await expect(
-      page.getByText(VALIDATION_MESSAGES.REQUIRED.COUNTRY),
+      authPage.getByText(VALIDATION_MESSAGES.REQUIRED.COUNTRY),
     ).not.toBeVisible();
   });
 
@@ -140,9 +139,9 @@ test.describe("Registration Test", () => {
     await authPage.fillRegistrationForm(invalidEmailUser);
     await authPage.clickRegisterButton();
 
-    await expect(page).toHaveURL(/.*\/auth\/register/);
+    await authPage.checkPageUrl(pageUrls.register);
     await expect(
-      page.getByText(VALIDATION_MESSAGES.FORMAT.EMAIL),
+      authPage.getByText(VALIDATION_MESSAGES.FORMAT.EMAIL),
     ).toBeVisible();
     await expect(authPage.emailInput).toHaveValue("invalid-email");
   });
@@ -158,18 +157,18 @@ test.describe("Registration Test", () => {
       "Password1", // missing special character
       "P#1s", // too short
     ];
+    const weakPasswordUser = generateUserData({ password: " " });
+    await authPage.fillRegistrationForm(weakPasswordUser);
 
     for (const weakPassword of weakPasswordCases) {
-      const weakPasswordUser = generateUserData();
       weakPasswordUser.password = weakPassword;
-      await authPage.fillRegistrationForm(weakPasswordUser);
-
+      await authPage.fillPassword(weakPassword);
       await authPage.clickRegisterButton();
-      await expect(page).toHaveURL(/.*\/auth\/register/);
+      await authPage.checkPageUrl(pageUrls.register);
       await expect(
-        page
+        authPage
           .getByText(VALIDATION_MESSAGES.FORMAT.PASSWORD_SPECIAL_CHAR)
-          .or(page.getByText(VALIDATION_MESSAGES.LENGTH.PASSWORD_MIN)),
+          .or(authPage.getByText(VALIDATION_MESSAGES.LENGTH.PASSWORD_MIN)),
       ).toBeVisible();
     }
   });
@@ -186,14 +185,14 @@ test.describe("Registration Test", () => {
     await authPage.fillRegistrationForm(invalidPhoneUser);
     await authPage.clickRegisterButton();
 
-    await expect(page).toHaveURL(/.*\/auth\/register/);
+    await authPage.checkPageUrl(pageUrls.register);
     await expect(
-      page.getByText(VALIDATION_MESSAGES.FORMAT.PHONE_NUMBERS_ONLY),
+      authPage.getByText(VALIDATION_MESSAGES.FORMAT.PHONE_NUMBERS_ONLY),
     ).toBeVisible();
 
     await authPage.phoneInput.fill("1234567890");
     await expect(
-      page.getByText(VALIDATION_MESSAGES.FORMAT.PHONE_NUMBERS_ONLY),
+      authPage.getByText(VALIDATION_MESSAGES.FORMAT.PHONE_NUMBERS_ONLY),
     ).not.toBeVisible();
 
     const successResponse = waitForResponse({
@@ -205,7 +204,7 @@ test.describe("Registration Test", () => {
     await authPage.clickRegisterButton();
     await successResponse;
 
-    await expect(page).toHaveURL(/.*\/auth\/login/);
+    await authPage.checkPageUrl(pageUrls.login);
   });
 
   test("Negative Path - Postal Code Length Validation", async ({
@@ -228,9 +227,9 @@ test.describe("Registration Test", () => {
     await authPage.clickRegisterButton();
     await postalCodeErrorResponse;
 
-    await expect(page).toHaveURL(/.*\/auth\/register/);
+    await authPage.checkPageUrl(pageUrls.register);
     await expect(
-      page.getByText(VALIDATION_MESSAGES.FORMAT.POSTCODE_LENGTH_EXCEEDED),
+      authPage.getByText(VALIDATION_MESSAGES.FORMAT.POSTCODE_LENGTH_EXCEEDED),
     ).toBeVisible();
 
     await authPage.postalCodeInput.fill("12345");
@@ -243,9 +242,9 @@ test.describe("Registration Test", () => {
     await authPage.clickRegisterButton();
     await successResponse;
     await expect(
-      page.getByText(VALIDATION_MESSAGES.FORMAT.POSTCODE_LENGTH_EXCEEDED),
+      authPage.getByText(VALIDATION_MESSAGES.FORMAT.POSTCODE_LENGTH_EXCEEDED),
     ).not.toBeVisible();
-    await expect(page).toHaveURL(/.*\/auth\/login/);
+    await authPage.checkPageUrl(pageUrls.login);
   });
 
   test("Negative Path - Duplicate Email Registration", async ({
@@ -270,9 +269,9 @@ test.describe("Registration Test", () => {
     await authPage.clickRegisterButton();
     await registrationErrorResponse;
 
-    await expect(page).toHaveURL(/.*\/auth\/register/);
+    await authPage.checkPageUrl(pageUrls.register);
     await expect(
-      page.getByText(VALIDATION_MESSAGES.FORMAT.EMAIL_ALREADY_EXISTS),
+      authPage.getByText(VALIDATION_MESSAGES.FORMAT.EMAIL_ALREADY_EXISTS),
     ).toBeVisible();
     await expect(authPage.emailInput).toHaveValue(masterUser.email);
   });
@@ -310,9 +309,9 @@ test.describe("Registration Test", () => {
 
     await authPage.clickRegisterButton();
     await errorResponse;
-    await expect(page).toHaveURL(/.*\/auth\/register/);
+    await authPage.checkPageUrl(pageUrls.register);
     await expect(
-      page.getByText(VALIDATION_MESSAGES.SERVER_ERROR),
+      authPage.getByText(VALIDATION_MESSAGES.SERVER_ERROR),
     ).toBeVisible();
     await expect(authPage.firstNameInput).toHaveValue(errorUser.firstName);
 
@@ -325,6 +324,6 @@ test.describe("Registration Test", () => {
 
     await authPage.registerButton.click();
     await recoveryResponse;
-    await expect(page).toHaveURL(/.*\/auth\/login/);
+    await authPage.checkPageUrl(pageUrls.login);
   });
 });

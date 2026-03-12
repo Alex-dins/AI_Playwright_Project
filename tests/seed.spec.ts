@@ -1,8 +1,7 @@
-import { expect, test } from "../lib/fixtures/setup.fixtures";
+import { test, expect } from '@playwright/test';
 
-test.describe("Test group", () => {
-  test("seed", async ({ basePage }) => {
+test.describe('Test group', () => {
+  test('seed', async ({ page }) => {
     // generate code here.
-    await basePage.goTo("/auth/register");
   });
 });

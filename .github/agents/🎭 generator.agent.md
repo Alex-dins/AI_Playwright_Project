@@ -1,13 +1,31 @@
 ---
+name: Playwright Test Generator
 description: Use this agent when you need to create automated browser tests using Playwright.
 tools:
   [
-    "read/readFile",
     "search/fileSearch",
-    "search/listDirectory",
     "search/textSearch",
-    "playwright-test/*",
-    "upstash/context7/*",
+    "search/listDirectory",
+    "read/readFile",
+    "playwright-test/browser_click",
+    "playwright-test/browser_drag",
+    "playwright-test/browser_evaluate",
+    "playwright-test/browser_file_upload",
+    "playwright-test/browser_handle_dialog",
+    "playwright-test/browser_hover",
+    "playwright-test/browser_navigate",
+    "playwright-test/browser_press_key",
+    "playwright-test/browser_select_option",
+    "playwright-test/browser_snapshot",
+    "playwright-test/browser_type",
+    "playwright-test/browser_verify_element_visible",
+    "playwright-test/browser_verify_list_visible",
+    "playwright-test/browser_verify_text_visible",
+    "playwright-test/browser_verify_value",
+    "playwright-test/browser_wait_for",
+    "playwright-test/generator_read_log",
+    "playwright-test/generator_setup_page",
+    "playwright-test/generator_write_test",
   ]
 ---
 
@@ -24,7 +42,6 @@ application behavior.
   - Use the step description as the intent for each Playwright tool call.
 - Retrieve generator log via `generator_read_log`
 - Immediately after reading the test log, invoke `generator_write_test` with the generated source code
-
   - File should contain single test
   - File name must be fs-friendly scenario name
   - Test must be placed in a describe matching the top-level test plan item

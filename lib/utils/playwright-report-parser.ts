@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import path from "path";
 
 export interface FailureContext {
   testName: string;
@@ -6,6 +7,13 @@ export interface FailureContext {
   stackTrace: string;
   location?: string;
   snippet?: string;
+}
+
+function stripAnsi(value: string | undefined): string {
+  if (!value) {
+    return "";
+  }
+  return value.replace(/\u001b\[[0-9;]*m/g, "");
 }
 
 function getFullTestName(test: any, parentSuiteTitles: string[]): string {
@@ -24,12 +32,12 @@ export class PlaywrightReportParser {
         if (result.status === "failed" && result.error) {
           failures.push({
             testName: getFullTestName(test, parents),
-            errorMessage: result.error.message,
-            stackTrace: result.error.stack,
+            errorMessage: stripAnsi(result.error.message),
+            stackTrace: stripAnsi(result.error.stack),
             location: result.error.location
               ? `${result.error.location.file}:${result.error.location.line}`
               : undefined,
-            snippet: result.error.snippet?.replace(/\u001b\[[0-9;]*m/g, ""),
+            snippet: stripAnsi(result.error.snippet),
           });
         }
       });
@@ -57,6 +65,20 @@ export class PlaywrightReportParser {
       traverseSuite(report, []);
     }
 
+    return failures;
+  }
+
+  static parseAndWriteFailures(
+    reportPath: string,
+    outputPath: string,
+  ): FailureContext[] {
+    const failures = this.parseReport(reportPath);
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+    fs.writeFileSync(
+      outputPath,
+      JSON.stringify({ failures }, null, 2),
+      "utf-8",
+    );
     return failures;
   }
 }

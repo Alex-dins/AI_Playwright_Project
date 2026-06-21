@@ -33,7 +33,7 @@ test.describe("Registration Test", () => {
     generateUserData,
   }) => {
     const userEmail = generateUserData().email;
-    const requiredErrors = [
+    const requiredErrors: string[] = [
       VALIDATION_MESSAGES.REQUIRED.FIRST_NAME,
       VALIDATION_MESSAGES.REQUIRED.LAST_NAME,
       VALIDATION_MESSAGES.REQUIRED.DOB,
@@ -47,7 +47,7 @@ test.describe("Registration Test", () => {
       VALIDATION_MESSAGES.REQUIRED.PASSWORD,
     ];
 
-    let registerCallCount = 0;
+    let registerCallCount: number = 0;
     await page.route("**/users/register", async (route: Route) => {
       registerCallCount += 1;
       await route.continue();
@@ -71,7 +71,6 @@ test.describe("Registration Test", () => {
 
   test("Negative Path - Date of Birth Format Validation", async ({
     authPage,
-    page,
     generateUserData,
   }) => {
     const invalidDobUser = generateUserData();
@@ -107,7 +106,6 @@ test.describe("Registration Test", () => {
 
   test("Negative Path - Country Requirement", async ({
     authPage,
-    page,
     generateUserData,
   }) => {
     const userData = generateUserData();
@@ -131,7 +129,6 @@ test.describe("Registration Test", () => {
 
   test("Negative Path - Invalid Email Format", async ({
     authPage,
-    page,
     generateUserData,
   }) => {
     const invalidEmailUser = generateUserData({ email: "invalid-email" });
@@ -148,10 +145,9 @@ test.describe("Registration Test", () => {
 
   test("Negative Path - Password Policy Enforcement", async ({
     authPage,
-    page,
     generateUserData,
   }) => {
-    const weakPasswordCases = [
+    const weakPasswordCases: string[] = [
       "password#1", // missing uppercase
       "Passwordwithoutnumber!", // missing digit
       "Password1", // missing special character
@@ -175,7 +171,6 @@ test.describe("Registration Test", () => {
 
   test("Negative Path - Phone Number Validation", async ({
     authPage,
-    page,
     waitForResponse,
     generateUserData,
   }) => {
@@ -209,7 +204,6 @@ test.describe("Registration Test", () => {
 
   test("Negative Path - Postal Code Length Validation", async ({
     authPage,
-    page,
     waitForResponse,
     generateUserData,
   }) => {
@@ -249,7 +243,6 @@ test.describe("Registration Test", () => {
 
   test("Negative Path - Duplicate Email Registration", async ({
     authPage,
-    page,
     registerNewUser,
     waitForResponse,
     generateUserData,

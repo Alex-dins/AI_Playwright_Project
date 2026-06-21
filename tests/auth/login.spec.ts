@@ -1,4 +1,5 @@
 import { expect, test } from "../../lib/fixtures/setup.fixtures";
+import { VALIDATION_MESSAGES } from "../../lib/constants/validation-messages";
 
 test.describe("Login Test", () => {
   const userData = {
@@ -25,7 +26,7 @@ test.describe("Login Test", () => {
     await authPage.fillPassword("password");
     await authPage.clickLoginButton();
     await expect(authPage.invalidEmailOrPasswordMessage).toHaveText(
-      "Invalid email or password"
+      VALIDATION_MESSAGES.AUTH.INVALID_CREDENTIALS
     );
   });
 
@@ -34,7 +35,7 @@ test.describe("Login Test", () => {
     await authPage.fillPassword("invalid-password");
     await authPage.clickLoginButton();
     await expect(authPage.invalidEmailOrPasswordMessage).toHaveText(
-      "Invalid email or password"
+      VALIDATION_MESSAGES.AUTH.INVALID_CREDENTIALS
     );
   });
 
@@ -48,7 +49,7 @@ test.describe("Login Test", () => {
     await authPage.fillPassword("password");
     await authPage.clickLoginButton();
     await expect(authPage.emailIsRequiredMessage).toHaveText(
-      "Email is required"
+      VALIDATION_MESSAGES.REQUIRED.EMAIL
     );
   });
 
@@ -56,7 +57,7 @@ test.describe("Login Test", () => {
     await authPage.fillEmail(userData.email);
     await authPage.clickLoginButton();
     await expect(authPage.passwordIsRequiredMessage).toHaveText(
-      "Password is required"
+      VALIDATION_MESSAGES.REQUIRED.PASSWORD
     );
   });
 });

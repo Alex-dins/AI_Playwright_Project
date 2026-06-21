@@ -3,6 +3,11 @@ export type UserLogin = {
   password: string;
 };
 
+export type ApiCartItem = {
+  product_id: string;
+  quantity: number;
+};
+
 export type ApiUserRegister = {
   first_name: string;
   last_name: string;

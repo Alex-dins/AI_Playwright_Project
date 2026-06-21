@@ -1,11 +1,12 @@
 import { request, APIRequestContext, APIResponse } from "@playwright/test";
 import { test as pages } from "./pages";
-import { UserLogin, ApiUserRegister } from "../types/types";
+import { UserLogin, ApiUserRegister, ApiCartItem } from "../types/types";
 
 export type APIRequestOptions = {
   apiBaseURL: string;
   registerNewUser: (userData: ApiUserRegister) => Promise<APIResponse>;
   loginAccessToken: (credentials: UserLogin) => Promise<string>;
+  addToCart: (item: ApiCartItem, token: string) => Promise<APIResponse>;
 };
 
 type APIRequestFixture = {
@@ -50,6 +51,17 @@ export const test = pages.extend<APIRequestOptions & APIRequestFixture>({
     };
 
     await use(loginAccessToken);
+  },
+
+  addToCart: async ({ api }, use) => {
+    const addToCart = async (item: ApiCartItem, token: string): Promise<APIResponse> => {
+      return api.post("carts", {
+        data: item,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    };
+
+    await use(addToCart);
   },
 });
 

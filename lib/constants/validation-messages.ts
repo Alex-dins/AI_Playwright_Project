@@ -1,5 +1,7 @@
-// tests/constants/validationMessages.ts
 export const VALIDATION_MESSAGES = {
+  AUTH: {
+    INVALID_CREDENTIALS: "Invalid email or password",
+  },
   REQUIRED: {
     FIRST_NAME: "First name is required",
     LAST_NAME: "Last name is required",

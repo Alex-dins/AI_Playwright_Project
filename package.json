@@ -14,13 +14,19 @@
     "extract:failures": "npm run build:analyzer && node build/lib/utils/extract-failures.js",
     "analyze:failures": "npm run build:analyzer && node build/lib/utils/analyze-failures.js"
   },
-  "keywords": ["playwright", "e2e", "testing", "typescript", "page-object-model"],
+  "keywords": [
+    "playwright",
+    "e2e",
+    "testing",
+    "typescript",
+    "page-object-model"
+  ],
   "author": "Alex-dins",
   "license": "ISC",
   "type": "module",
   "devDependencies": {
     "@faker-js/faker": "^10.1.0",
-    "@playwright/test": "^1.59.0",
+    "@playwright/test": "^1.61.0",
     "@types/node": "^24.12.2",
     "dotenv": "^17.2.3",
     "openai": "^6.16.0",

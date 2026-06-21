@@ -17,7 +17,7 @@
   "keywords": ["playwright", "e2e", "testing", "typescript", "page-object-model"],
   "author": "Alex-dins",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "devDependencies": {
     "@faker-js/faker": "^10.1.0",
     "@playwright/test": "^1.59.0",

@@ -9,6 +9,7 @@ export class AuthPage extends BasePage {
   readonly firstNameInput = this.getByDataTest(authPageLocators.firstNameInput);
   readonly lastNameInput = this.getByDataTest(authPageLocators.lastNameInput);
   readonly dobInput = this.getByDataTest(authPageLocators.dobInput);
+  readonly houseNumberInput = this.getByDataTest(authPageLocators.houseNumberInput);
   readonly streetInput = this.getByDataTest(authPageLocators.streetInput);
   readonly postalCodeInput = this.getByDataTest(
     authPageLocators.postalCodeInput,
@@ -45,6 +46,7 @@ export class AuthPage extends BasePage {
       firstName: () => this.firstNameInput.fill(userData.firstName!),
       lastName: () => this.lastNameInput.fill(userData.lastName!),
       dateOfBirth: () => this.dobInput.fill(userData.dateOfBirth!),
+      houseNumber: () => this.houseNumberInput.fill(userData.houseNumber!),
       street: () => this.streetInput.fill(userData.street!),
       postalCode: () => this.postalCodeInput.fill(userData.postalCode!),
       city: () => this.cityInput.fill(userData.city!),

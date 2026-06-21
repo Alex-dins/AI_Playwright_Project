@@ -2,6 +2,7 @@ export interface UserDomain {
   firstName: string;
   lastName: string;
   dateOfBirth: string;
+  houseNumber: string;
   street: string;
   postalCode: string;
   city: string;

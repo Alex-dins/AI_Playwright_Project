@@ -2,6 +2,7 @@ export interface LocatorMap {
   readonly firstNameInput: string;
   readonly lastNameInput: string;
   readonly dobInput: string;
+  readonly houseNumberInput: string;
   readonly streetInput: string;
   readonly cityInput: string;
   readonly stateInput: string;
@@ -24,6 +25,7 @@ export const authPageLocators: LocatorMap = {
   firstNameInput: "first-name",
   lastNameInput: "last-name",
   dobInput: "dob",
+  houseNumberInput: "house_number",
   streetInput: "street",
   postalCodeInput: "postal_code",
   cityInput: "city",

@@ -11,6 +11,7 @@ export const generateUserData = (
       .birthdate({ min: 18, max: 65, mode: "age" })
       .toISOString()
       .split("T")[0],
+    houseNumber: faker.location.buildingNumber(),
     street: faker.location.streetAddress(),
     postalCode: faker.location.zipCode(),
     city: faker.location.city(),

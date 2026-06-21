@@ -1,7 +1,7 @@
 {
   "name": "ai_playwright_project",
   "version": "1.0.0",
-  "description": "Playwright E2E test suite with Page Object Model, typed fixtures, API helpers, and AI-powered failure analysis",
+  "description": "Playwright E2E test suite with Page Object Model, typed fixtures, and API helpers",
   "main": "index.js",
   "scripts": {
     "test": "npx playwright test",
@@ -9,10 +9,7 @@
     "test:cart": "npx playwright test tests/cart",
     "test:products": "npx playwright test tests/products",
     "test:account": "npx playwright test tests/account",
-    "test:ci": "npx playwright test --reporter=html,json",
-    "build:analyzer": "npx tsc",
-    "extract:failures": "npm run build:analyzer && node build/lib/utils/extract-failures.js",
-    "analyze:failures": "npm run build:analyzer && node build/lib/utils/analyze-failures.js"
+    "test:ci": "npx playwright test --reporter=html,json"
   },
   "keywords": [
     "playwright",
@@ -29,7 +26,6 @@
     "@playwright/test": "^1.61.0",
     "@types/node": "^24.12.2",
     "dotenv": "^17.2.3",
-    "openai": "^6.16.0",
     "typescript": "^5.9.3"
   }
 }

@@ -1,13 +1,12 @@
 # Playwright E2E Test Suite
 
-End-to-end test automation project built with Playwright and TypeScript, covering authentication, cart, product search, and account flows. Includes a Page Object Model architecture, typed fixtures, API-backed test setup, and an AI-powered failure analyzer.
+End-to-end test automation project built with Playwright and TypeScript, covering authentication, cart, product search, and account flows. Includes a Page Object Model architecture, typed fixtures, and API-backed test setup.
 
 ## Tech Stack
 
 - **[Playwright](https://playwright.dev/)** — browser automation and test runner
 - **TypeScript** — strict typing across page objects, fixtures, and data factories
 - **Faker.js** — dynamic test data generation
-- **OpenAI API** — AI-assisted failure analysis (`analyze:failures` script)
 
 ## Project Structure
 
@@ -20,8 +19,7 @@ lib/
 ├── locators/         # Centralized selector maps per page
 ├── mappers/          # Domain ↔ API model converters
 ├── pages/            # Page Object Model classes
-├── types/            # API-facing types (snake_case)
-└── utils/            # AI client, report parser, failure extractor
+└── types/            # API-facing types (snake_case)
 
 tests/
 ├── auth/             # Login and registration flows
@@ -55,7 +53,6 @@ API_BASE_URL=https://api.practicesoftwaretesting.com
 customerUsername=your_test_email@example.com
 customerPassword=your_test_password
 
-OPENAI_API_KEY=your_openai_key   # only needed for AI failure analysis
 ```
 
 ## Running Tests
@@ -73,16 +70,6 @@ npm run test:account
 # CI mode (generates HTML + JSON reports)
 npm run test:ci
 ```
-
-## AI Failure Analysis
-
-After a test run, generate an AI-powered analysis of any failures:
-
-```bash
-npm run analyze:failures
-```
-
-This reads `playwright-report/test-results.json`, extracts failures, and sends each one to GPT-4o-mini with a structured prompt covering root cause and fix suggestions.
 
 ## Architecture Highlights
 

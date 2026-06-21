@@ -8,4 +8,5 @@ node_modules/
 /playwright/.auth/
 .env
 .playwright-cli/
+.playwright/
 .vscode/

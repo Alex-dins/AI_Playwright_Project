@@ -6,7 +6,7 @@ import { UserDomain } from "../interfaces/user-register.interface";
 
 export type setupResponseOptions = {
   url: string;
-  method: "GET" | "POST" | "PUT" | "DELETE";
+  method: "GET" | "POST" | "PUT" | "DELETE" | "QUERY";
   status: number;
 };
 

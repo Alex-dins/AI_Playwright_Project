@@ -27,7 +27,6 @@ test.describe("Registration Test", () => {
   });
 
   test("Negative Path - Required Fields Validation", async ({
-    basePage,
     authPage,
     page,
     generateUserData,
@@ -58,7 +57,7 @@ test.describe("Registration Test", () => {
 
     await expect(
       authPage.getByText(VALIDATION_MESSAGES.REQUIRED.EMAIL),
-    ).not.toBeVisible();
+    ).toBeHidden();
 
     await authPage.fillEmail("");
 
@@ -92,7 +91,7 @@ test.describe("Registration Test", () => {
     ).toBeVisible();
     await expect(
       authPage.getByText(VALIDATION_MESSAGES.FORMAT.DOB),
-    ).not.toBeVisible();
+    ).toBeHidden();
     await authPage.checkPageUrl(pageUrls.register);
 
     await authPage.fillDob("1995-06-15");
@@ -100,7 +99,7 @@ test.describe("Registration Test", () => {
 
     await expect(
       authPage.getByText(VALIDATION_MESSAGES.FORMAT.DOB_MINIMUM_AGE),
-    ).not.toBeVisible();
+    ).toBeHidden();
     await authPage.checkPageUrl(pageUrls.login);
   });
 
@@ -124,7 +123,7 @@ test.describe("Registration Test", () => {
 
     await expect(
       authPage.getByText(VALIDATION_MESSAGES.REQUIRED.COUNTRY),
-    ).not.toBeVisible();
+    ).toBeHidden();
   });
 
   test("Negative Path - Invalid Email Format", async ({
@@ -188,7 +187,7 @@ test.describe("Registration Test", () => {
     await authPage.phoneInput.fill("1234567890");
     await expect(
       authPage.getByText(VALIDATION_MESSAGES.FORMAT.PHONE_NUMBERS_ONLY),
-    ).not.toBeVisible();
+    ).toBeHidden();
 
     const successResponse = waitForResponse({
       url: "/users/register",
@@ -237,7 +236,7 @@ test.describe("Registration Test", () => {
     await successResponse;
     await expect(
       authPage.getByText(VALIDATION_MESSAGES.FORMAT.POSTCODE_LENGTH_EXCEEDED),
-    ).not.toBeVisible();
+    ).toBeHidden();
     await authPage.checkPageUrl(pageUrls.login);
   });
 

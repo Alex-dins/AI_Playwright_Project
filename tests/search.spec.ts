@@ -63,8 +63,7 @@ test.describe("Search functionalyty tests", () => {
     await expect(mainPage.searchCompleted).toHaveText(
       "There are no products found.",
     );
-    const productCount = await mainPage.productNames.count();
-    expect(productCount).toBe(0);
+    await expect(mainPage.productNames).toHaveCount(0);
   });
 
   test("search by pressing Enter", async ({
@@ -132,7 +131,7 @@ test.describe("Search functionalyty tests", () => {
       mainPage.searchReset.click(),
     ]);
 
-    await expect(mainPage.searchCaption).not.toBeVisible();
+    await expect(mainPage.searchCaption).toBeHidden();
     await expect(mainPage.searchInput).toHaveValue("");
     await expect(mainPage.productNames.first()).toBeVisible();
     const resetProductCount = await mainPage.productNames.count();

@@ -1,4 +1,4 @@
-import { type Page, type Locator, expect } from "@playwright/test";
+import { type Page } from "@playwright/test";
 import { BasePage } from "./base.page";
 import { UserDomain } from "../interfaces/user-register.interface";
 import { authPageLocators } from "../locators/auth-page.loc";

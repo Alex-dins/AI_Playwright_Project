@@ -22,10 +22,15 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@faker-js/faker": "^10.1.0",
     "@playwright/test": "^1.61.0",
     "@types/node": "^24.12.2",
     "dotenv": "^17.2.3",
-    "typescript": "^5.9.3"
+    "eslint": "^10.13.0",
+    "eslint-plugin-playwright": "^2.12.1",
+    "globals": "^17.13.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.72.0"
   }
 }
